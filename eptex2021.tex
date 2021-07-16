@@ -373,7 +373,6 @@
 		CTAN から様々なディストリビューション（配布元）へ
 		\begin{itemize}
 			\item {\TeX} Live (\url{http://www.tug.org/texlive/})
-			\item W32TeX (\url{http://w32tex.org/})
 			\item MiK{\TeX} (\url{https://miktex.org})
 		\end{itemize}
 	\end{block}
@@ -415,25 +414,30 @@
 \frame[c]{\section{\TeX のインストール} {\nishikifont 🖳 美文書 付録 A 🖳}}
 
 \begin{frame}
-	\frametitle{\TeX のインストール}
-	Windows なら W32TeX\\
-	それ以外なら {\TeX} Live をインストール
+	\frametitle{\TeX\ Liveのインストール \hmtexdoc{texlive}}
+	詳しくは \TeX\ Wiki~\url{https://texwiki.texjp.org}\\
+	または \url{http://www.circle9.work/tex/install.html}\\
+	\url{http://www.tug.org/texlive/quickinstall.html}
 	
-	詳しくは {\TeX} Wiki\footnote{\url{https://texwiki.texjp.org}}\\
-	または \url{http://www.circle9.work/tex/install.html}
+	ネットワーク経由で大量のファイルをダウンロードすることになるので、
+	時間があるときに、通信環境がよいところで
 	
-	インストールには数時間かかります。
+	\begin{block}{W32\TeX}
+		Windows で一般的だったが\hmemph{配布が終了した} (2021/07/13)
+	\end{block}
+	\begin{block}{MacTeX}
+		Mac で一般的だが、様々なバイナリをいろいろな場所に配置するので注意
+	\end{block}
 \end{frame}
 
 \begin{frame}
 	\frametitle{最新の {\TeX} Live をインストールする---UNIX 系の場合}
-	TUG\footnote{{\TeX} User Group \url{ftp://ftp.tug.org/texlive/tlnet/}}
-	からインストーラをダウンロード\footnote{ミラーサイトを利用しましょう}
+	TUG (\TeX\ User Group) からインストーラをダウンロード\\
+	\url{ftp://ftp.tug.org/texlive/tlnet/}
 	\begin{typecmdbox}
 		{\scriptsize wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unix.tar.gz}
 	\end{typecmdbox}
-	インストーラを起動してインストール\\
-	{\small ネットワーク経由なので電波の良いところで}
+	インストーラを起動してインストール
 	\begin{typecmdbox}
 		{\scriptsize sudo ./install-tl -no-gui \textbackslash\\
 		~~~~-repository http://mirror.ctan.org/systems/texlive/tlnet}
@@ -441,8 +445,9 @@
 	
 	パスを忘れずに通す
 	\begin{typecmdbox}
-		\scriptsize echo 'export PATH=\$PATH:/usr/local/texlive/2020/bin/*/' >> ~/.bashrc
+		\scriptsize sudo /usr/local/texlive/????/bin/*/tlmgr path add
 	\end{typecmdbox}
+	{\scriptsize \typecmd{tlmgr path add} はパスを通すために \TeX\ Live が用意したコマンド}
 \end{frame}
 
 \begin{frame}
@@ -458,6 +463,9 @@
 	定期的にやろう
 	
 	年度が変わる大型アップデート時には\hmemph{再インストール}
+	
+	古い \TeX\ 環境がインストールされたまま上からインストールができる\\
+	{\small 年度ごとに新しくディレクトリを作成してインストールするため}
 \end{frame}
 
 \begin{frame}
@@ -475,34 +483,16 @@
 	\end{itemize}
 	
 	個人的には install-tl でのインストールを勧めたい
-	\footnote{「PDF さえできればいい」という人は apt でも十分。ただし、
-	tlmgr は使えない（apt でインストールしたものと衝突する可能性）。}
 \end{frame}
 
 \frame[c]{\section{\TeX の使い方} {\nishikifont 😀 美文書 2 章 😀}}
 
 \begin{frame}
-	\frametitle{\TeX の使い方}
-	自分で書いた \TeX ソースを、\TeX 処理系に処理させることで、PDF ファイルを得る。\par
-	\centeralign{\hmemph{のだが}}\par
-	歴史的経緯で、\TeX 処理系は、PDF ファイルではなく、\hmemph{dvi ファイル}を出力する
-	\footnote{新しい処理系には、直接 PDF を出力するものもある。\\例: \pdfTeX, \LuaTeX, \XeTeX}。
-	
-	出てきた dvi ファイルを dvi ウェアで処理することによって、最終的な PDF を得ることができる。
-\end{frame}
-
-\begin{frame}
-	\frametitle{PDF を得る流れ}
-	\begin{columns}[c]
-		\begin{column}{0.6\textwidth}
-			\begin{description}
-				\item[\TeX 処理系] 文字の座標を決める
-				\item[dvi ウェア] 実際に文字を配置する
-			\end{description}
-		\end{column}
+	\frametitle{\TeX で PDF を作成する流れ}
+	\begin{columns}[T]
 		\begin{column}{0.4\textwidth}
 			\centering
-			\begin{tikzpicture}
+			\begin{tikzpicture}[x=.8cm,y=.8cm]
 				\node[draw](tex)at(0,0){.tex ファイル};
 				\node[draw](dvi)at(0,-2){.dvi ファイル};
 				\node[draw](pdf)at(0,-4){.pdf ファイル};
@@ -512,22 +502,41 @@
 				\node[right](T)at(0.5,-1){\TeX 処理系};
 				\node[right](D)at(0.5,-3){dvi ウェア};
 				\draw[<-](A)--(T);\draw[<-](B)--(D);
-			\end{tikzpicture}
+			\end{tikzpicture}\\
+			レガシーな処理系\\
+			\pLaTeX, \upLaTeX など
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\centering
+			\begin{tikzpicture}[x=.8cm,y=.8cm]
+				\node[draw](tex)at(0,0){.tex ファイル};
+				\node[draw](pdf)at(0,-4){.pdf ファイル};
+				\draw[->,very thick](tex)--(pdf);
+				\coordinate(A)at(0,-2);
+				\node[right](T)at(0.5,-2){\TeX 処理系};
+				\draw[<-](A)--(T);
+			\end{tikzpicture}\\
+			モダンな処理系\\
+			\LuaLaTeX, \pdfLaTeX など
 		\end{column}
 	\end{columns}
+	\begin{desc}
+		\item[\TeX 処理系] 文字の座標を決める
+		\item[dvi ウェア] 実際に文字を配置する
+		\end{desc}
 \end{frame}
 
 \begin{frame}
-	\frametitle{dvi ウェア}
-	dvi ← \textbf{D}e\textbf{v}ice \textbf{I}ndependent （装置非依存）
-	
-	dvi ウェア……dvi ファイルを変換するソフトウェア
-	
-	\begin{itemize}
-		\item dvipdfmx（PDF に変換）
-		\item dvips（PostScript に変換）
-	\end{itemize}
-	
+	\frametitle{dvi ファイル・dvi ウェア}
+	\begin{desc}
+		\item[dvi] \textbf{D}e\textbf{v}ice \textbf{I}ndependent （装置非依存）の略
+		\item[dvi ファイル] どの座標にどの文字を置くのかなどの情報が格納されている
+		\item[dvi ウェア] dvi ファイルを変換するソフトウェア
+			\begin{itemize}
+				\item dvipdfmx（PDF に変換）
+				\item dvips（PostScript に変換）
+			\end{itemize}
+	\end{desc}
 	\begin{block}{dvi の仕様}
 		\begin{description}
 			\item[標準仕様] 装置非依存な部分。dvi ウェアで共通。
@@ -545,7 +554,7 @@
 	
 	\begin{block}{日本で一般的な方法}
 		\begin{itemize}
-			\item {\pLaTeX} + dvipdfmx
+			\item {\pLaTeX} + dvipdfmx \hmemph{（古い）}
 			\item {\upLaTeX} + dvipdfmx
 			\item {\LuaLaTeX}（最近広まりつつある）
 		\end{itemize}
